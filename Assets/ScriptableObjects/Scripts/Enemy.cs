@@ -7,4 +7,6 @@ public class Enemy : ScriptableObject
 {
     public float speed;
     public Color color;
+
+    public int number;
 }

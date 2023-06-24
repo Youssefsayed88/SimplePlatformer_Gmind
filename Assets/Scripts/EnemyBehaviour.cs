@@ -38,6 +38,7 @@ public class EnemyBehaviour : MonoBehaviour
     {
         GameObject coinSpawn = Instantiate(coin, transform.position, Quaternion.identity);
         coinSpawn.GetComponent<SpriteRenderer>().color = enemy.color;
+        coinSpawn.GetComponent<CoinBehaviour>().number = enemy.number;
     }
   
     void OnCollisionEnter2D(Collision2D col){

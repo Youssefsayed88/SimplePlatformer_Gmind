@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float jumpForce = 5f;
+    float health = 3f;
     public float speed = 5f;
     private Rigidbody2D rb;
     private bool isOnGround = false;
@@ -38,5 +39,28 @@ public class PlayerController : MonoBehaviour
     private void Move()
     {
         rb.velocity = new Vector2(speed * Input.GetAxisRaw("Horizontal"), rb.velocity.y);
+    }
+    void OnCollisionEnter2D(Collision2D col){
+        //Here we destroy the enemy but the player takes damage(unimplemented)
+        if(col.gameObject.CompareTag("Enemy")){
+            TakeDamage();
+        }
+    }
+    void OnTriggerEnter2D(Collider2D col){
+        //Here we destroy the enemy but the player takes damage(unimplemented)
+        if(col.gameObject.CompareTag("Coin")){
+            GameManager.instance.checkPuzzle(col.GetComponent<CoinBehaviour>().number);
+        }
+    }
+
+    void TakeDamage(){
+        health--;
+        if(health <= 0){
+            Die();
+        }
+    }
+
+    void Die(){
+        Time.timeScale = 0;
     }
 }
