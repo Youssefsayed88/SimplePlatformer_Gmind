@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Spawner : MonoBehaviour
 {
-    public GameObject[] prefab;
+    public GameObject prefab;
     float timer = 0f;
     public float spawnInterval = 2f;
 
@@ -13,14 +13,13 @@ public class Spawner : MonoBehaviour
     {
         timer += Time.deltaTime;
         if(timer > spawnInterval){
-            SpawnRandomEnemy();
+            SpawnEnemy();
             timer = 0f;
         }
     }
 
-    void SpawnRandomEnemy()
+    void SpawnEnemy()
     {
-        int spawnIndex = Random.Range(0, prefab.Length);
-        Instantiate(prefab[spawnIndex], transform.position, Quaternion.identity);
+        Instantiate(prefab, transform.position, Quaternion.identity);
     }
 }

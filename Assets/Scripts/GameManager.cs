@@ -29,15 +29,26 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
 
+    void Awake(){
+        Time.timeScale = 1f;
+        if (instance != null && instance != this) 
+        { 
+            Destroy(this); 
+        } 
+        else 
+        { 
+            instance = this; 
+        } 
+    }
     void Start()
     {
-        #region Singleton
-        if(instance == null){
-            instance = this;
-        }else{
-            Destroy(gameObject);
-        }
-        #endregion
+        // #region Singleton
+        // if(instance == null){
+        //     instance = this;
+        // }else{
+        //     Destroy(gameObject);
+        // }
+        // #endregion
         loseUI.SetActive(false);
         winUI.SetActive(false);
         CreatePuzzle();
@@ -48,6 +59,7 @@ public class GameManager : MonoBehaviour
         PuzzleSystem();
     }
 
+    //Create puzzle randomly by randomizing numbers that belongs to a certain color
     void CreatePuzzle(){
         puzzleIndex = 0;
         puzzle = "";
@@ -57,11 +69,14 @@ public class GameManager : MonoBehaviour
         }
         AccessPuzzle();
     }
+    // get the current coin(puzzle)
     void AccessPuzzle(){
         int index = puzzleIndex;
         currentPuzzle = puzzle[index] - '0';
     }
 
+    //check if coin is the one needed then procced to the next one else generate new puzzle
+    //if no more puzzles player wins
     public void checkPuzzle(int coinNum){
         if(puzzleIndex >= puzzleMax - 1){
             Win();
@@ -74,6 +89,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    //UI helper function to show the current puzzle set to the player
     void PuzzleSystem(){
         for(int i = 0; i < coinImages.Length; i++){
             coinImages[i].color = enemiesData[(puzzle[i] - '0') - 1].color;
@@ -81,11 +97,13 @@ public class GameManager : MonoBehaviour
         currentPuzzleUI.rectTransform.position = coinImages[puzzleIndex].rectTransform.position + new Vector3(0, -1);
     }
 
+    //show win panel
     void Win(){
         Time.timeScale = 0f;
         winUI.SetActive(true);
     }
 
+    //show lose panel
     public void Lose(){
         Time.timeScale = 0f;
         loseUI.SetActive(true);
@@ -100,6 +118,11 @@ public class GameManager : MonoBehaviour
     public void Restart(){
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    void OnDestroy(){
+        Destroy(gameObject);
+        instance = null; 
     }
 
     public void Quit(){

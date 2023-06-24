@@ -12,6 +12,10 @@ public class PlayerController : MonoBehaviour
 
     public LayerMask groundLayer;
 
+    void Awake(){
+        health = 3;
+    }
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -27,6 +31,7 @@ public class PlayerController : MonoBehaviour
         Move();
     }
 
+    //check if on ground to disallow the player to change midair
     private void GroundCheck(){
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 5f, groundLayer);
         if(hit.distance < 0.3f && hit.distance > 0f){
@@ -36,26 +41,32 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //basic player movement
     private void Move()
     {
         rb.velocity = new Vector2(speed * Input.GetAxisRaw("Horizontal"), rb.velocity.y);
     }
+    
+    //if collided with enemy take damage
     void OnCollisionEnter2D(Collision2D col){
         //Here we destroy the enemy but the player takes damage(unimplemented)
         if(col.gameObject.CompareTag("Enemy")){
             TakeDamage();
         }
     }
+
     void OnTriggerEnter2D(Collider2D col){
-        //Jump again if enemy hit
+        //if landed on enemy head jump
         if(col.gameObject.CompareTag("Enemy")){
             Jump();
         }
+        //check if this coin match the one needed for the puzzle
         if(col.gameObject.CompareTag("Coin")){
             GameManager.instance.checkPuzzle(col.GetComponent<CoinBehaviour>().number);
         }
     }
 
+    //take damage
     void TakeDamage(){
         GameManager.instance.UpdateHp(health);
         health--;
@@ -64,15 +75,20 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    //jump
     void Jump(){
         rb.velocity = new Vector2(rb.velocity.x, jumpForce);
     }
 
+    //call lose function if player has 0 health
     void Die(){
         GameManager.instance.Lose();
     }
 
+    //lose if outside screen
     void OnBecameInvisible() {
-        Die();
+        if(GameManager.instance != null){
+            Die();
+        }
     }
 }

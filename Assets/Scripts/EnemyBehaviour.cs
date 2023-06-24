@@ -10,6 +10,7 @@ public class EnemyBehaviour : MonoBehaviour
 
     public GameObject coin;
 
+    //used for randomization
     int coinToss;
 
     [SerializeField]
@@ -31,16 +32,20 @@ public class EnemyBehaviour : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
+
+    // basic enemy movement
     void Update()
     {
         rb.velocity = new Vector2(speed, rb.velocity.y);
     }
 
+    //randomize enemy data
+    //returns random enemy data
     Enemy RandomizeEnemy(){
         return enemyType[Random.Range(0, enemyType.Length)];
     }
 
+    //make enemy drop
     void DropCoin()
     {
         GameObject coinSpawn = Instantiate(coin, transform.position, Quaternion.identity);
@@ -49,6 +54,7 @@ public class EnemyBehaviour : MonoBehaviour
     }
   
     void OnCollisionEnter2D(Collision2D col){
+        //if collided with wall change direction 
         if(col.gameObject.CompareTag("Wall")){
             speed *= -1;
         }
@@ -67,11 +73,13 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
+    //drop coin on death
     void OnDestroy(){
         if(!this.gameObject.scene.isLoaded) return;
         DropCoin();
     }
 
+    //destroy if outside screen view
     void OnBecameInvisible() {
         Destroy(gameObject);
     }
