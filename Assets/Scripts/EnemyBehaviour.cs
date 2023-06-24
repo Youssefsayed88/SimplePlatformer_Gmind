@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyBehaviour : MonoBehaviour
@@ -12,14 +10,23 @@ public class EnemyBehaviour : MonoBehaviour
 
     public GameObject coin;
 
+    int coinToss;
+
     [SerializeField]
     float speed;
-
     // Start is called before the first frame update
+
+    void Awake(){
+        coinToss = Random.Range(0,2);
+    }
+
     void Start()
     {
         enemy = RandomizeEnemy();
         speed = enemy.speed;
+        if (coinToss == 0){
+            speed *= -1;
+        }
         gameObject.GetComponent<SpriteRenderer>().color = enemy.color;
         rb = GetComponent<Rigidbody2D>();
     }
@@ -27,7 +34,7 @@ public class EnemyBehaviour : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        rb.velocity = new Vector2(-speed, rb.velocity.y);
+        rb.velocity = new Vector2(speed, rb.velocity.y);
     }
 
     Enemy RandomizeEnemy(){
@@ -43,11 +50,11 @@ public class EnemyBehaviour : MonoBehaviour
   
     void OnCollisionEnter2D(Collision2D col){
         if(col.gameObject.CompareTag("Wall")){
-            Debug.Log("done");
             speed *= -1;
         }
-        //Here we destroy the enemy but the player takes damage(unimplemented)
+        //Here we destroy the enemy but the player takes damage
         if(col.gameObject.CompareTag("Player")){
+            gameObject.SetActive(false);
             Destroy(gameObject);
         }
     }
@@ -55,6 +62,7 @@ public class EnemyBehaviour : MonoBehaviour
     void OnTriggerEnter2D(Collider2D col){
         //Here we destroy the enemy without the player taking damage
         if(col.gameObject.CompareTag("Player")){
+            gameObject.SetActive(false);
             Destroy(gameObject);
         }
     }
@@ -64,6 +72,7 @@ public class EnemyBehaviour : MonoBehaviour
         DropCoin();
     }
 
-    
-
+    void OnBecameInvisible() {
+        Destroy(gameObject);
+    }
 }

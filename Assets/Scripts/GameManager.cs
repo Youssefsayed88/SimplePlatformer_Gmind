@@ -2,21 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     int puzzleIndex;
-    public int currentPuzzle;
-    public string puzzle;
+    int currentPuzzle;
+    string puzzle;
 
     [SerializeField]
     int puzzleMax = 6;
 
-    public Color[] coinColors;
+    Color[] coinColors;
+
+    public Enemy[] enemiesData;
 
     public Image[] coinImages;
 
     public Image currentPuzzleUI;
+
+    public Image[] hpUI;
+
+    public GameObject loseUI;
+    
+    public GameObject winUI;
 
     public static GameManager instance;
 
@@ -29,6 +38,8 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
         #endregion
+        loseUI.SetActive(false);
+        winUI.SetActive(false);
         CreatePuzzle();
     }
 
@@ -52,7 +63,7 @@ public class GameManager : MonoBehaviour
     }
 
     public void checkPuzzle(int coinNum){
-        if(puzzleIndex >= puzzleMax -1){
+        if(puzzleIndex >= puzzleMax - 1){
             Win();
         }
         else if(coinNum == currentPuzzle){
@@ -65,12 +76,33 @@ public class GameManager : MonoBehaviour
 
     void PuzzleSystem(){
         for(int i = 0; i < coinImages.Length; i++){
-            coinImages[i].color = coinColors[(puzzle[i] - '0') - 1];
+            coinImages[i].color = enemiesData[(puzzle[i] - '0') - 1].color;
         }
         currentPuzzleUI.rectTransform.position = coinImages[puzzleIndex].rectTransform.position + new Vector3(0, -1);
     }
 
     void Win(){
-        Debug.Log("you win!");
+        Time.timeScale = 0f;
+        winUI.SetActive(true);
+    }
+
+    public void Lose(){
+        Time.timeScale = 0f;
+        loseUI.SetActive(true);
+    }
+
+    // desc:update hp ui
+    // input: current hp
+    // output: None
+    public void UpdateHp(int hp){
+        hpUI[hp-1].gameObject.SetActive(false);
+    }
+    public void Restart(){
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void Quit(){
+        Application.Quit();
     }
 }

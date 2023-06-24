@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float jumpForce = 5f;
-    float health = 3f;
+    int health = 3;
     public float speed = 5f;
     private Rigidbody2D rb;
     private bool isOnGround = false;
@@ -22,14 +22,14 @@ public class PlayerController : MonoBehaviour
         GroundCheck();
         if (Input.GetButtonDown("Jump") && isOnGround)
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            Jump();
         }
         Move();
     }
 
     private void GroundCheck(){
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 5f, groundLayer);
-        if(hit.distance < 0.3f){
+        if(hit.distance < 0.3f && hit.distance > 0f){
             isOnGround = true;
         }else{
             isOnGround = false;
@@ -47,20 +47,32 @@ public class PlayerController : MonoBehaviour
         }
     }
     void OnTriggerEnter2D(Collider2D col){
-        //Here we destroy the enemy but the player takes damage(unimplemented)
+        //Jump again if enemy hit
+        if(col.gameObject.CompareTag("Enemy")){
+            Jump();
+        }
         if(col.gameObject.CompareTag("Coin")){
             GameManager.instance.checkPuzzle(col.GetComponent<CoinBehaviour>().number);
         }
     }
 
     void TakeDamage(){
+        GameManager.instance.UpdateHp(health);
         health--;
         if(health <= 0){
             Die();
         }
     }
 
+    void Jump(){
+        rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+    }
+
     void Die(){
-        Time.timeScale = 0;
+        GameManager.instance.Lose();
+    }
+
+    void OnBecameInvisible() {
+        Die();
     }
 }
